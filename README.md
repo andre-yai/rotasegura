@@ -8,6 +8,8 @@ Este é o back-end do aplicativo.
 
 ### Instruções
 
+O servidor requer Node.js e uma instância de MongoDB.
+
 ```
 $ npm install
 $ node load.js
