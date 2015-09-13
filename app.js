@@ -1,5 +1,7 @@
+var cors = require('cors');
 var express = require('express');
 var app = express();
+app.use(cors());
 
 var mongojs = require('mongojs');
 var db = mongojs('rotasegura', ['ocorrencias']);
