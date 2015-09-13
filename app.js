@@ -36,6 +36,10 @@ app.get('/perigo', function (req, res) {
   }
 });
 
+app.post('/reportar', function (req, res) {
+  console.log(req.query);
+});
+
 var server = app.listen(3000, function () {
   var host = server.address().address;
   var port = server.address().port;
