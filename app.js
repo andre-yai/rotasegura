@@ -13,23 +13,27 @@ app.get('/ocorrencias', function (req, res) {
 });
 
 app.get('/perigo', function (req, res) {
-  lat = parseFloat(req.query.lat);
-  lon = parseFloat(req.query.lon);
 
-  db.ocorrencias.find({
-    loc: {
-      $geoWithin: { $centerSphere: [ [lat, lon], 0.2 / 6378.1 ] }
-    }
-  }, function (err, ocorrencias) {
-    if (err) res.sendStatus(500);
-    score = 0;
-    console.log(ocorrencias.length);
-    for (i = 0; i < ocorrencias.length; i++) {
-      distance = getDistanceFromLatLonInKm(lat, lon, ocorrencias[i].loc[0], ocorrencias[i].loc[1]);
-      score += 1 / (0.1 + distance);
-    }
-    res.send(score.toString());
-  });
+  if (req.query.lat && req.query.lon) {
+    lat = parseFloat(req.query.lat);
+    lon = parseFloat(req.query.lon);
+
+    db.ocorrencias.find({
+      loc: {
+        $geoWithin: { $centerSphere: [ [lat, lon], 0.2 / 6378.1 ] }
+      }
+    }, function (err, ocorrencias) {
+      if (err) res.sendStatus(500);
+      score = 0;
+      for (i = 0; i < ocorrencias.length; i++) {
+        distance = getDistanceFromLatLonInKm(lat, lon, ocorrencias[i].loc[0], ocorrencias[i].loc[1]);
+        score += 1 / (0.05 + distance);
+      }
+      res.send(score.toString());
+    });
+  } else {
+    res.sendStatus(500);
+  }
 });
 
 /* Iniciar servidor */
