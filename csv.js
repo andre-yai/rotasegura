@@ -1,7 +1,6 @@
 "use strict";
 var csv = require('fast-csv');
 var mongojs = require("mongojs");
-//var moment = require('moment');
 var _ = require('underscore');
 var async = require('async');
 var geolib = require('geolib');
@@ -30,7 +29,6 @@ var map_Ocorrencias = [];
 
 
 var processStops2 = function(key, doc, cbk_db) {
-    console.log("OII");
     db.ocorrencia.update({data1: doc.data1},{$set: doc}, {upsert: true}, cbk_db);
 };
 
@@ -56,28 +54,23 @@ var processAsyncDBcall = function(name, values, db_funcao_stops, callback) {
         if (err) {
             console.log("Error executing: ",name," err:",err);
         }
-        //console.log("GTFS: "+name+" - finished, nOk: "+nOk+", err:"+nErr+", elapsed: "+(Date.now()-start)/1000+"ms");
         callback(err);
     });
 
 };
 
 var readOcorrencias = function (callback) {
-    //console.log("GTFS: reading stops.txt");
 
     var readHeader = false;
-
 
     csv.fromPath("entrada.csv", {ignoreEmpty:true,headers:false})
         .on("data", function(data){
             if(!readHeader) { readHeader = true;  return; }
 
-            //"stop_id","stop_name","stop_desc","stop_lat","stop_lon"
-            //10 ,10, 32876434 ,A, Teste dados 1
             var data1 = data[0];
             var doc = {
                 data1: data1,
-                loc: {lat: parseFloat(data[1]), lng: parseFloat(data[2])},
+                loc: [parseFloat(data[1]), lng: parseFloat(data[2])],
                 regiao: data[3],
                 nome: data[4]
             };
@@ -94,10 +87,10 @@ var server = app.listen(3000, function () {
     console.log('Example app listening at http://%s:%s', host, port);
 });
 
-app.get('/Ocorrencias', function (req, res){
+app.get('/ocorrencias', function (req, res){
     readOcorrencias(function(err) {
-        if(err) console.log("Errou!!");
-        console.log("Acabou Ocorrencias!!");
+        if(err) console.log("Errou!");
+        console.log("Acabou!");
         res.send(map_Ocorrencias);
     });
 });
