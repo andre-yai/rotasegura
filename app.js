@@ -13,7 +13,6 @@ app.get('/ocorrencias', function (req, res) {
 });
 
 app.get('/perigo', function (req, res) {
-
   if (req.query.lat && req.query.lon) {
     lat = parseFloat(req.query.lat);
     lon = parseFloat(req.query.lon);
@@ -27,7 +26,8 @@ app.get('/perigo', function (req, res) {
       score = 0;
       for (i = 0; i < ocorrencias.length; i++) {
         distance = getDistanceFromLatLonInKm(lat, lon, ocorrencias[i].loc[0], ocorrencias[i].loc[1]);
-        score += 1 / (0.05 + distance);
+        time = (new Date() - ocorrencias[i].hora) / 8.64e7 | 0; // in days
+        score += 1 / ((0.05 + distance) * (100 + Math.sqrt(time)));
       }
       res.send(score.toString());
     });
@@ -36,7 +36,6 @@ app.get('/perigo', function (req, res) {
   }
 });
 
-/* Iniciar servidor */
 var server = app.listen(3000, function () {
   var host = server.address().address;
   var port = server.address().port;
